@@ -20,6 +20,20 @@ size_t binary_tree_height(const binary_tree_t *tree)
 }
 
 /**
+ * binary_tree_count_nodes - counts the number of nodes in a binary tree
+ * @tree: pointer to the root node of the tree
+ *
+ * Return: number of nodes in the tree, or 0 if tree is NULL
+ */
+size_t binary_tree_count_nodes(const binary_tree_t *tree)
+{
+    if (tree == NULL)
+        return 0;
+
+    return 1 + binary_tree_count_nodes(tree->left) + binary_tree_count_nodes(tree->right);
+}
+
+/**
  * binary_tree_is_perfect - checks if a binary tree is perfect
  * @tree: pointer to the root node of the tree
  *
@@ -27,23 +41,15 @@ size_t binary_tree_height(const binary_tree_t *tree)
  */
 int binary_tree_is_perfect(const binary_tree_t *tree)
 {
-    size_t height, i;
-    size_t nodes_expected, nodes_count = 0;
+    size_t height, nodes_expected, nodes_count;
 
     if (tree == NULL)
         return 0;
 
     height = binary_tree_height(tree);
+    nodes_expected = (1 << height) - 1;
+    nodes_count = binary_tree_count_nodes(tree);
 
-    /* Calculate the number of nodes expected in a perfect binary tree */
-    nodes_expected = 1;
-    for (i = 0; i < height; i++)
-        nodes_expected *= 2;
-
-    /* Count the number of nodes in the tree */
-    nodes_count = binary_tree_size(tree);
-
-    /* Check if the number of nodes matches the expected number for a perfect binary tree */
     return (nodes_count == nodes_expected);
 }
 
