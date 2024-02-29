@@ -5,38 +5,33 @@
  * @first: pointer to the first node
  * @second: pointer to the second node
  *
- * Return: pointer to the lowest common ancestor node, or NULL if not found
+ * Return: pointer to the lowest common ancestor node,
+ *         or NULL if no common ancestor was found
  */
 binary_tree_t *binary_trees_ancestor(const binary_tree_t *first, const binary_tree_t *second)
 {
     if (first == NULL || second == NULL)
         return NULL;
 
-    /* Check if either first or second is the current node */
+    /* If either first or second is one of the nodes, return it */
     if (first == second)
         return (binary_tree_t *)first;
 
-    /* Check if either first or second is a descendant of the current node */
-    if (first == second->parent)
-        return (binary_tree_t *)first;
-    if (second == first->parent)
-        return (binary_tree_t *)second;
+    /* Search for the LCA recursively */
+    binary_tree_t *left_lca = binary_trees_ancestor(first->left, second);
+    binary_tree_t *right_lca = binary_trees_ancestor(first->right, second);
 
-    /* Recursively search for the lowest common ancestor in the left and right subtrees */
-    binary_tree_t *left_ancestor = binary_trees_ancestor(first->parent, second);
-    binary_tree_t *right_ancestor = binary_trees_ancestor(first, second->parent);
-
-    /* If both left and right subtrees return non-NULL values, the current node is the LCA */
-    if (left_ancestor != NULL && right_ancestor != NULL)
+    /* If both left and right LCA are non-null, the current node is the LCA */
+    if (left_lca != NULL && right_lca != NULL)
         return (binary_tree_t *)first;
 
-    /* If only one subtree returns a non-NULL value, propagate it upwards */
-    if (left_ancestor != NULL)
-        return left_ancestor;
-    if (right_ancestor != NULL)
-        return right_ancestor;
+    /* If one of the subtrees contains one of the nodes, return the LCA from that subtree */
+    if (left_lca != NULL)
+        return left_lca;
+    if (right_lca != NULL)
+        return right_lca;
 
-    /* If both subtrees return NULL, return NULL */
+    /* If neither of the subtrees contains any of the nodes, return NULL */
     return NULL;
 }
 
