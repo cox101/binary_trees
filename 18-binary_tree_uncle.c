@@ -11,17 +11,9 @@ binary_tree_t *binary_tree_uncle(binary_tree_t *node)
     if (node == NULL || node->parent == NULL || node->parent->parent == NULL)
         return NULL;
 
-    /* Get the parent of the node */
-    binary_tree_t *parent = node->parent;
-
-    /* If the parent's parent is NULL, there's no uncle */
-    if (parent->parent == NULL)
-        return NULL;
-
-    /* Get the uncle node by accessing the sibling of the parent */
-    if (parent->parent->left == parent)
-        return parent->parent->right;  /* Uncle is the right child of the grandparent */
+    /* Determine if the parent is the left child or the right child of the grandparent */
+    if (node->parent == node->parent->parent->left)
+        return node->parent->parent->right; /* Return the right child (uncle) of the grandparent */
     else
-        return parent->parent->left;   /* Uncle is the left child of the grandparent */
+        return node->parent->parent->left;  /* Return the left child (uncle) of the grandparent */
 }
-
