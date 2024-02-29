@@ -1,37 +1,63 @@
 #include "binary_trees.h"
 
 /**
+ * binary_tree_depth - measures the depth of a node in a binary tree
+ * @tree: node to calculate the depth of
+ *
+ * Return: depth of the node
+ *         0 if tree is NULL
+ */
+size_t binary_tree_depth(const binary_tree_t *tree)
+{
+    size_t depth = 0;
+
+    while (tree)
+    {
+        depth++;
+        tree = tree->parent;
+    }
+
+    return (depth);
+}
+
+/**
  * binary_trees_ancestor - finds the lowest common ancestor of two nodes
  * @first: pointer to the first node
  * @second: pointer to the second node
  *
- * Return: pointer to the lowest common ancestor node,
- *         or NULL if no common ancestor was found
+ * Return: pointer to the lowest common ancestor node
+ *         NULL if there is no ancestor node
  */
-binary_tree_t *binary_trees_ancestor(const binary_tree_t *first, const binary_tree_t *second)
+binary_tree_t *binary_trees_ancestor(const binary_tree_t *first,
+                                     const binary_tree_t *second)
 {
-    if (first == NULL || second == NULL)
-        return NULL;
+    size_t depth_first, depth_second;
 
-    /* If either first or second is one of the nodes, return it */
-    if (first == second)
-        return (binary_tree_t *)first;
+    if (!first || !second)
+        return (NULL);
 
-    /* Search for the LCA recursively */
-    binary_tree_t *left_lca = binary_trees_ancestor(first->left, second);
-    binary_tree_t *right_lca = binary_trees_ancestor(first->right, second);
+    depth_first = binary_tree_depth(first);
+    depth_second = binary_tree_depth(second);
 
-    /* If both left and right LCA are non-null, the current node is the LCA */
-    if (left_lca != NULL && right_lca != NULL)
-        return (binary_tree_t *)first;
+    while (depth_first > depth_second)
+    {
+        first = first->parent;
+        depth_first--;
+    }
+    while (depth_second > depth_first)
+    {
+        second = second->parent;
+        depth_second--;
+    }
 
-    /* If one of the subtrees contains one of the nodes, return the LCA from that subtree */
-    if (left_lca != NULL)
-        return left_lca;
-    if (right_lca != NULL)
-        return right_lca;
+    while (first && second)
+    {
+        if (first == second)
+            return ((binary_tree_t *)first);
+        first = first->parent;
+        second = second->parent;
+    }
 
-    /* If neither of the subtrees contains any of the nodes, return NULL */
-    return NULL;
+    return (NULL);
 }
 
