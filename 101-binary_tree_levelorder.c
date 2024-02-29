@@ -12,26 +12,24 @@ void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
     if (tree == NULL || func == NULL)
         return;
 
-    /* Create a queue for level-order traversal */
-    binary_tree_t **queue = malloc(sizeof(binary_tree_t *) * 1000);
-    if (queue == NULL)
-        return;
+    queue_t *queue = NULL;
+    const binary_tree_t *current;
 
-    int front = 0, rear = 0;
-    queue[rear++] = (binary_tree_t *)tree;
+    /* Enqueue the root node */
+    enqueue(&queue, (void *)tree);
 
-    /* Perform level-order traversal */
-    while (front < rear)
+    while (queue != NULL)
     {
-        const binary_tree_t *current = queue[front++];
+        /* Dequeue the front node and process it */
+        current = (const binary_tree_t *)dequeue(&queue);
         func(current->n);
 
+        /* Enqueue left child if exists */
         if (current->left != NULL)
-            queue[rear++] = (binary_tree_t *)current->left;
+            enqueue(&queue, (void *)current->left);
+
+        /* Enqueue right child if exists */
         if (current->right != NULL)
-            queue[rear++] = (binary_tree_t *)current->right;
+            enqueue(&queue, (void *)current->right);
     }
-
-    free(queue);
 }
-
