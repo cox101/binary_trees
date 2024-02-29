@@ -1,53 +1,50 @@
 #include "binary_trees.h"
-#include "11-binary_tree_size.c"
 
 /**
- * binary_tree_is_complete - checks if a binary tree is complete
- * @tree: pointer to the root node of the tree
+ * binary_tree_is_complete - Checks if a binary tree is complete.
+ * @tree: A pointer to the root node of the tree to check.
  *
- * Return: 1 if the tree is complete, 0 otherwise
+ * Return: 1 if the tree is complete, 0 otherwise.
  */
 int binary_tree_is_complete(const binary_tree_t *tree)
 {
     if (tree == NULL)
         return (0);
 
-    return (binary_tree_is_complete_recursive(tree, 0, binary_tree_count_nodes(tree)));
-}
+    /* Create a queue for level order traversal */
+    queue_t *queue = NULL;
 
-/**
- * binary_tree_is_complete_recursive - recursively checks if a binary tree is complete
- * @tree: pointer to the root node of the tree
- * @index: index of the current node (starting from 0)
- * @node_count: total number of nodes in the tree
- *
- * Return: 1 if the tree is complete, 0 otherwise
- */
-int binary_tree_is_complete_recursive(const binary_tree_t *tree, size_t index, size_t node_count)
-{
-    if (tree == NULL)
-        return (1);
+    /* Enqueue the root node */
+    enqueue(&queue, (void *)tree);
 
-    /* If current index exceeds the number of nodes, tree is not complete */
-    if (index >= node_count)
-        return (0);
+    /* Flag to indicate if we have encountered a NULL node */
+    int null_encountered = 0;
 
-    /* Recursively check left and right subtrees */
-    return (binary_tree_is_complete_recursive(tree->left, 2 * index + 1, node_count) &&
-            binary_tree_is_complete_recursive(tree->right, 2 * index + 2, node_count));
-}
+    /* Perform level order traversal */
+    while (queue != NULL)
+    {
+        /* Dequeue front node */
+        const binary_tree_t *current = (const binary_tree_t *)dequeue(&queue);
 
-/**
- * binary_tree_count_nodes - counts the number of nodes in a binary tree
- * @tree: pointer to the root node of the tree
- *
- * Return: number of nodes in the tree
- */
-size_t binary_tree_count_nodes(const binary_tree_t *tree)
-{
-    if (tree == NULL)
-        return (0);
+        /* If a NULL node is encountered after a non-NULL node, return 0 */
+        if (current == NULL)
+        {
+            null_encountered = 1;
+            continue;
+        }
 
-    return (1 + binary_tree_count_nodes(tree->left) + binary_tree_count_nodes(tree->right));
+        /* If a NULL node is encountered before a non-NULL node, return 0 */
+        if (null_encountered && current != NULL)
+            return (0);
+
+        /* Enqueue left child */
+        enqueue(&queue, (void *)current->left);
+
+        /* Enqueue right child */
+        enqueue(&queue, (void *)current->right);
+    }
+
+    /* If we have completed the traversal without returning 0, return 1 */
+    return (1);
 }
 
